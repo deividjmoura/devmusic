@@ -1,0 +1,21 @@
+{
+  "name": "devmusic",
+  "version": "1.0.0",
+  "description": "Fullstack music streaming application inspired by Spotify",
+  "main": "index.js",
+  "scripts": {
+    "commit": "cz"
+  },
+  "keywords": [],
+  "author": "Deivid Moura",
+  "license": "ISC",
+  "devDependencies": {
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
