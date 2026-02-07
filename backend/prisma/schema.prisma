@@ -14,3 +14,11 @@ model User {
   password  String
   createdAt DateTime @default(now())
 }
+
+model Music {
+  id        Int      @id @default(autoincrement())
+  title     String
+  artist    String
+  url       String
+  createdAt DateTime @default(now())
+}
