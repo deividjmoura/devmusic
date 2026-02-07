@@ -22,3 +22,4 @@ model Music {
   url       String
   createdAt DateTime @default(now())
 }
+
