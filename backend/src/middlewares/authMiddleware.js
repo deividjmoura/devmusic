@@ -11,10 +11,8 @@ export function authMiddleware(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    req.userId = decoded.userId;
-
-    return next();
+    req.userId = decoded.id; // ⚠️ corrigido para coincidir com o JWT do login
+    next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid token" });
   }

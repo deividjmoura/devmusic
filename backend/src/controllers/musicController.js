@@ -1,57 +1,50 @@
-import { createMusic, getAllMusics } from "../services/musicService.js";
-import { getMyMusics } from "../services/musicService.js";
+import { prisma } from "../server.js";
 
-
-
+// Criar música
 export const createMusicController = async (req, res) => {
   try {
     const { title, artist, url } = req.body;
 
-    const music = await createMusic({ title, artist, url });
+    const music = await prisma.music.create({
+      data: {
+        title,
+        artist,
+        url,
+        userId: req.userId // ⚠️ associa ao usuário logado
+      }
+    });
 
     return res.status(201).json(music);
-
-  } catch (error) {
-    console.error("ERRO REAL CREATE:", error);
-    return res.status(500).json({ message: "Erro ao criar música" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Error creating music" });
   }
 };
 
-
+// Listar todas as músicas (opcional)
 export const getAllMusicsController = async (req, res) => {
   try {
-    const musics = await getAllMusics();
-    return res.json(musics);
-  } catch (error) {
-  console.error("ERRO REAL:", error);
-  return res.status(500).json({ message: "Erro ao criar música" });
-}
-};
-
-export const getMyMusicsController = async (req, res) => {
-  try {
-    const musics = await getMyMusics(req.userId);
-    return res.json(musics);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Erro ao buscar suas músicas" });
-  }
-};
-
-import prisma from "../config/prisma.js";
-
-export const listUserMusics = async (req, res) => {
-  try {
-    const userId = req.userId;
-
     const musics = await prisma.music.findMany({
-      where: { userId }
+      include: { user: { select: { name: true, email: true } } }
     });
 
     return res.json(musics);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Error fetching all musics" });
+  }
+};
 
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Erro ao listar músicas" });
+// Listar músicas do usuário logado
+export const getMyMusicsController = async (req, res) => {
+  try {
+    const musics = await prisma.music.findMany({
+      where: { userId: req.userId }
+    });
+
+    return res.json(musics);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Error fetching your musics" });
   }
 };

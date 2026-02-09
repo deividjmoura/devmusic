@@ -1,13 +1,12 @@
 import express from "express";
-import { createMusicController, getAllMusicsController } from "../controllers/musicController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
-import { listUserMusics } from "../controllers/musicController.js";
-
+import { createMusicController, getAllMusicsController, getMyMusicsController } from "../controllers/musicController.js";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, createMusicController);
-router.get("/", getAllMusicsController);
-router.get("/", authMiddleware, listUserMusics);
+// Rotas protegidas por auth
+router.post("/", authMiddleware, createMusicController);      // Criar música
+router.get("/", authMiddleware, getMyMusicsController);       // Listar só músicas do usuário
+router.get("/all", getAllMusicsController);                  // Listar todas as músicas (opcional)
 
 export default router;
