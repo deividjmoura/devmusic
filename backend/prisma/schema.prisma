@@ -8,18 +8,21 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+  id       String   @id @default(uuid())
+  name     String
+  email    String   @unique
+  password String
+  musics   Music[]
 }
+
+
 
 model Music {
-  id        Int      @id @default(autoincrement())
-  title     String
-  artist    String
-  url       String
-  createdAt DateTime @default(now())
-}
+  id     String @id @default(uuid())
+  title  String
+  artist String
+  url    String
 
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+}

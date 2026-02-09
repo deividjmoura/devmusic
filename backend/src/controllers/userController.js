@@ -34,9 +34,10 @@ export const registerUser = async (req, res) => {
       createdAt: user.createdAt,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
+  console.error("ERRO REGISTER:", error);
+  return res.status(500).json({ message: "Internal server error" });
+}
+
 };
 
 export const loginUser = async (req, res) => {

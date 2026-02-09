@@ -18,3 +18,13 @@ export const getAllMusics = async () => {
   });
 };
     
+export const getMyMusics = async (userId) => {
+  return await prisma.music.findMany({
+    where: {
+      userId
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
+};
