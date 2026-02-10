@@ -1,12 +1,36 @@
 import express from "express";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
-import { createMusicController, getAllMusicsController, getMyMusicsController } from "../controllers/musicController.js";
+import { 
+  createMusicController, 
+  getAllMusicsController, 
+  getMyMusicsController,
+  deleteMusic,
+  updateMusic
+} from "../controllers/musicController.js";
+import { validateMusic } from "../middlewares/validateMusic.js";
+import { validateUpdateMusic } from "../middlewares/validateUpdateMusic.js";
+
+
 
 const router = express.Router();
 
 // Rotas protegidas por auth
-router.post("/", authMiddleware, createMusicController);      // Criar música
+router.post(
+  "/",
+  authMiddleware,
+  validateMusic,
+  createMusicController
+);    // Criar música
 router.get("/", authMiddleware, getMyMusicsController);       // Listar só músicas do usuário
-router.get("/all", getAllMusicsController);                  // Listar todas as músicas (opcional)
+router.get("/all", getAllMusicsController);                  // Listar todas as músicas 
+router.delete("/:id", authMiddleware, deleteMusic);         // Deletar música 
+router.put(
+  "/:id",
+  authMiddleware,
+  validateUpdateMusic,
+  updateMusic
+);            // Editar música (opcional)
+
 
 export default router;
+
