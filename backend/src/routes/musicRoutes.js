@@ -4,7 +4,7 @@ import {
   createMusicController, 
   getAllMusicsController, 
   getMyMusicsController,
-  deleteMusic,
+  deleteMusicController,
   updateMusic
 } from "../controllers/musicController.js";
 import { validateMusic } from "../middlewares/validateMusic.js";
@@ -23,7 +23,7 @@ router.post(
 );    // Criar música
 router.get("/", authMiddleware, getMyMusicsController);       // Listar só músicas do usuário
 router.get("/all", getAllMusicsController);                  // Listar todas as músicas 
-router.delete("/:id", authMiddleware, deleteMusic);         // Deletar música 
+router.delete("/:id", authMiddleware, deleteMusicController);         // Deletar música 
 router.put(
   "/:id",
   authMiddleware,
