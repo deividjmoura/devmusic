@@ -1,36 +1,32 @@
 import express from "express";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
-import { 
-  createMusicController, 
-  getAllMusicsController, 
+import {
+  createMusicController,
+  getAllMusicsController,
   getMyMusicsController,
   deleteMusicController,
-  updateMusic
+  updateMusicController
 } from "../controllers/musicController.js";
-import { validateMusic } from "../middlewares/validateMusic.js";
-import { validateUpdateMusic } from "../middlewares/validateUpdateMusic.js";
-
-
+import { validate } from "../middlewares/validate.js";
+import {
+  createMusicBodySchema,
+  updateMusicBodySchema,
+  listMusicsQuerySchema,
+  musicIdParamsSchema
+} from "../schemas/musicSchemas.js";
 
 const router = express.Router();
 
-// Rotas protegidas por auth
-router.post(
-  "/",
-  authMiddleware,
-  validateMusic,
-  createMusicController
-);    // Criar música
-router.get("/", authMiddleware, getMyMusicsController);       // Listar só músicas do usuário
-router.get("/all", getAllMusicsController);                  // Listar todas as músicas 
-router.delete("/:id", authMiddleware, deleteMusicController);         // Deletar música 
+router.post("/", authMiddleware, validate(createMusicBodySchema), createMusicController);
+router.get("/", authMiddleware, validate(listMusicsQuerySchema, "query"), getMyMusicsController);
+router.get("/all", validate(listMusicsQuerySchema, "query"), getAllMusicsController);
+router.delete("/:id", authMiddleware, validate(musicIdParamsSchema, "params"), deleteMusicController);
 router.put(
   "/:id",
   authMiddleware,
-  validateUpdateMusic,
-  updateMusic
-);            // Editar música (opcional)
-
+  validate(musicIdParamsSchema, "params"),
+  validate(updateMusicBodySchema),
+  updateMusicController
+);
 
 export default router;
-

@@ -1,27 +1,34 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import swaggerUi from "swagger-ui-express";
 import userRoutes from "./routes/userRoutes.js";
 import musicRoutes from "./routes/musicRoutes.js";
-import { PrismaClient } from "@prisma/client";
+import { openApiDocument } from "./docs/openapi.js";
+import { errorHandler, notFoundHandler } from "./middlewares/errorHandler.js";
 
 dotenv.config();
-
-export const prisma = new PrismaClient();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Rotas
+app.get("/api/openapi.json", (_req, res) => {
+  res.json(openApiDocument);
+});
+
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
+
 app.use("/api/users", userRoutes);
 app.use("/api/musics", musicRoutes);
 
-// Rota teste
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.json({ message: "DevMusic API is running 🚀" });
 });
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 

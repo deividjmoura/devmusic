@@ -1,119 +1,46 @@
-import { prisma } from "../server.js";
 import {
   createMusicService,
+  listMusicsService,
   getUserMusicsService,
-  deleteMusicService
+  deleteMusicService,
+  updateMusicService
 } from "../services/musicService.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 
+export const createMusicController = asyncHandler(async (req, res) => {
+  const { title, artist, url } = req.validated.body;
 
-// Criar música
-export const createMusicController = async (req, res) => {
-  try {
-    const { title, artist, url } = req.body;
+  const music = await createMusicService({
+    title,
+    artist,
+    url,
+    userId: req.userId
+  });
 
-    if (!title || !artist) {
-      return res.status(400).json({ message: "Título e artista são obrigatórios" });
-    }
+  return res.status(201).json(music);
+});
 
-    const music = await createMusicService({
-      title,
-      artist,
-      url,
-      userId: req.userId
-    });
+export const getAllMusicsController = asyncHandler(async (req, res) => {
+  const result = await listMusicsService(req.validated.query);
+  return res.json(result);
+});
 
-    return res.status(201).json(music);
+export const getMyMusicsController = asyncHandler(async (req, res) => {
+  const result = await getUserMusicsService(req.userId, req.validated.query);
+  return res.json(result);
+});
 
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Erro ao criar música" });
-  }
-};
+export const deleteMusicController = asyncHandler(async (req, res) => {
+  const { id } = req.validated.params;
+  await deleteMusicService(id, req.userId);
 
+  return res.json({ message: "Música deletada com sucesso" });
+});
 
-// Listar todas as músicas (opcional)
-export const getAllMusicsController = async (req, res) => {
-  try {
-    const musics = await prisma.music.findMany({
-      include: { user: { select: { name: true, email: true } } }
-    });
+export const updateMusicController = asyncHandler(async (req, res) => {
+  const { id } = req.validated.params;
 
-    return res.json(musics);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Error fetching all musics" });
-  }
-};
+  const updatedMusic = await updateMusicService(id, req.userId, req.validated.body);
 
-// Listar músicas do usuário logado
-export const getMyMusicsController = async (req, res) => {
-  try {
-    const musics = await getUserMusicsService(req.userId);
-    return res.json(musics);
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Erro ao buscar músicas" });
-  }
-};
-
-
-
-// Deletar música
-export const deleteMusicController = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    await deleteMusicService(Number(id), req.userId);
-
-    return res.json({ message: "Música deletada com sucesso" });
-
-  } catch (error) {
-    if (error.message === "Música não encontrada") {
-      return res.status(404).json({ message: error.message });
-    }
-
-    if (error.message === "Não autorizado") {
-      return res.status(403).json({ message: error.message });
-    }
-
-    console.error(error);
-    return res.status(500).json({ message: "Erro ao deletar música" });
-  }
-};
-
-
-export const updateMusic = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.userId;
-    const { title, artist, url } = req.body;
-
-    const music = await prisma.music.findUnique({
-      where: { id }
-    });
-
-    if (!music) {
-      return res.status(404).json({ message: "Música não encontrada" });
-    }
-
-    if (music.userId !== userId) {
-      return res.status(403).json({ message: "Não autorizado" });
-    }
-
-    const updatedMusic = await prisma.music.update({
-  where: { id },
-  data: {
-    ...(title && { title }),
-    ...(artist && { artist }),
-    ...(url && { url })
-    }
-    });
-
-    return res.json(updatedMusic);
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Erro ao atualizar música" });
-  }
-};
+  return res.json(updatedMusic);
+});
