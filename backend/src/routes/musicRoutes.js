@@ -5,17 +5,42 @@ import {
   getAllMusicsController,
   getMyMusicsController,
   deleteMusicController,
-  updateMusicController
+  updateMusicController,
+  searchTracksController,
+  getOnboardingTracksController,
+  upsertPreferenceController,
+  getLikedMusicsController,
+  getRecommendationsController
 } from "../controllers/musicController.js";
 import { validate } from "../middlewares/validate.js";
 import {
   createMusicBodySchema,
   updateMusicBodySchema,
   listMusicsQuerySchema,
-  musicIdParamsSchema
+  musicIdParamsSchema,
+  searchTracksQuerySchema,
+  onboardingTracksQuerySchema,
+  upsertPreferenceBodySchema,
+  recommendationsQuerySchema
 } from "../schemas/musicSchemas.js";
 
 const router = express.Router();
+
+router.get("/search", authMiddleware, validate(searchTracksQuerySchema, "query"), searchTracksController);
+router.get(
+  "/onboarding",
+  authMiddleware,
+  validate(onboardingTracksQuerySchema, "query"),
+  getOnboardingTracksController
+);
+router.post("/preferences", authMiddleware, validate(upsertPreferenceBodySchema), upsertPreferenceController);
+router.get(
+  "/recommendations",
+  authMiddleware,
+  validate(recommendationsQuerySchema, "query"),
+  getRecommendationsController
+);
+router.get("/liked", authMiddleware, getLikedMusicsController);
 
 router.post("/", authMiddleware, validate(createMusicBodySchema), createMusicController);
 router.get("/", authMiddleware, validate(listMusicsQuerySchema, "query"), getMyMusicsController);

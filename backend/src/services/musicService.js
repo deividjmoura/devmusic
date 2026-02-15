@@ -1,10 +1,16 @@
 import prisma from "../config/prisma.js";
 import { AppError } from "../utils/appError.js";
+import {
+  getRandomJamendoTracks,
+  getRecommendedJamendoTracks,
+  searchTracksFromJamendo
+} from "./jamendoService.js";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 100;
 const SORTABLE_FIELDS = new Set(["createdAt", "title", "artist"]);
+const ONBOARDING_TARGET = 10;
 
 const toPositiveInt = (value, fallback) => {
   const parsed = Number.parseInt(value, 10);
@@ -201,4 +207,116 @@ export const updateMusicService = async (id, userId, payload) => {
     where: { id: musicId },
     data
   });
+};
+
+export const searchJamendoTracksService = async (query, limit) => {
+  return searchTracksFromJamendo({ query, limit });
+};
+
+export const getOnboardingTracksService = async (userId, count = ONBOARDING_TARGET) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { onboardingCompleted: true }
+  });
+
+  if (!user) {
+    throw new AppError(404, "Usuário não encontrado");
+  }
+
+  if (user.onboardingCompleted) {
+    return { completed: true, tracks: [] };
+  }
+
+  const tracks = await getRandomJamendoTracks(count);
+  return { completed: false, tracks };
+};
+
+export const upsertPreferenceService = async (userId, payload) => {
+  const preference = await prisma.userMusicPreference.upsert({
+    where: {
+      userId_jamendoId: {
+        userId,
+        jamendoId: payload.jamendoId
+      }
+    },
+    create: {
+      userId,
+      jamendoId: payload.jamendoId,
+      title: payload.title,
+      artist: payload.artist,
+      audioUrl: payload.audioUrl,
+      imageUrl: payload.imageUrl,
+      status: payload.status,
+      source: payload.source
+    },
+    update: {
+      title: payload.title,
+      artist: payload.artist,
+      audioUrl: payload.audioUrl,
+      imageUrl: payload.imageUrl,
+      status: payload.status,
+      source: payload.source
+    }
+  });
+
+  if (payload.source === "ONBOARDING") {
+    const onboardingVotes = await prisma.userMusicPreference.count({
+      where: {
+        userId,
+        source: "ONBOARDING"
+      }
+    });
+
+    if (onboardingVotes >= ONBOARDING_TARGET) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { onboardingCompleted: true }
+      });
+    }
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { onboardingCompleted: true }
+  });
+
+  return {
+    preference,
+    onboardingCompleted: Boolean(user?.onboardingCompleted)
+  };
+};
+
+export const getLikedMusicsService = async (userId) => {
+  return prisma.userMusicPreference.findMany({
+    where: {
+      userId,
+      status: "LIKE"
+    },
+    orderBy: {
+      updatedAt: "desc"
+    }
+  });
+};
+
+export const getRecommendationsService = async (userId, limit = 3) => {
+  const likedTracks = await prisma.userMusicPreference.findMany({
+    where: {
+      userId,
+      status: "LIKE"
+    },
+    orderBy: {
+      updatedAt: "desc"
+    },
+    take: 30,
+    select: {
+      jamendoId: true,
+      artist: true
+    }
+  });
+
+  if (likedTracks.length === 0) {
+    return getRandomJamendoTracks(limit);
+  }
+
+  return getRecommendedJamendoTracks({ likedTracks, limit });
 };

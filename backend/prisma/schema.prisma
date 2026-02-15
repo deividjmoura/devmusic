@@ -3,24 +3,54 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // ou "mysql" ou "sqlite" dependendo do seu banco
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
-  musics   Music[]
+  id                  Int                 @id @default(autoincrement())
+  name                String
+  email               String              @unique
+  password            String
+  onboardingCompleted Boolean             @default(false)
+  musics              Music[]
+  preferences         UserMusicPreference[]
 }
 
 model Music {
-  id      Int    @id @default(autoincrement())
-  title   String
-  artist  String
-  url     String?
-  userId  Int
-  user    User   @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  title     String
+  artist    String
+  url       String?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model UserMusicPreference {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  jamendoId String
+  title     String
+  artist    String
+  audioUrl  String?
+  imageUrl  String?
+  status    PreferenceStatus
+  source    PreferenceSource
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  user      User             @relation(fields: [userId], references: [id])
+
+  @@unique([userId, jamendoId])
+}
+
+enum PreferenceStatus {
+  LIKE
+  DISLIKE
+}
+
+enum PreferenceSource {
+  ONBOARDING
+  HOME
+  SEARCH
 }
