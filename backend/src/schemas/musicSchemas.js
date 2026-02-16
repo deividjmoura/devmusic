@@ -72,9 +72,10 @@ export const recommendationsQuerySchema = z.object({
 });
 
 export const upsertPreferenceBodySchema = z.object({
-  jamendoId: z.string().trim().min(1, "jamendoId é obrigatório"),
+  deezerId: z.string().trim().min(1, "deezerId é obrigatório"),
   title: z.string().trim().min(1, "title é obrigatório"),
   artist: z.string().trim().min(1, "artist é obrigatório"),
+  artistId: z.string().trim().min(1, "artistId inválido").nullable().optional(),
   audioUrl: z.string().trim().url("audioUrl inválido").nullable().optional(),
   imageUrl: z.string().trim().url("imageUrl inválido").nullable().optional(),
   source: z.enum(preferenceSource),

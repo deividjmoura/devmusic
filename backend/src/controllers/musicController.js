@@ -4,7 +4,7 @@ import {
   getUserMusicsService,
   deleteMusicService,
   updateMusicService,
-  searchJamendoTracksService,
+  searchDeezerTracksService,
   getOnboardingTracksService,
   upsertPreferenceService,
   getLikedMusicsService,
@@ -52,7 +52,7 @@ export const updateMusicController = asyncHandler(async (req, res) => {
 
 export const searchTracksController = asyncHandler(async (req, res) => {
   const { q, limit } = req.validated.query;
-  const tracks = await searchJamendoTracksService(q, limit);
+  const tracks = await searchDeezerTracksService(q, limit);
 
   return res.json({ data: tracks });
 });

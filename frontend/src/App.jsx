@@ -153,7 +153,7 @@ function AuthScreen({ onLogin }) {
           <h1>{mode === "login" ? "Entrar na conta" : "Criar conta"}</h1>
           <p className="auth-subtitle">
             {mode === "login"
-              ? "Faça login para descobrir músicas pelo Jamendo."
+              ? "Faça login para descobrir músicas pelo Deezer."
               : "Crie sua conta para começar recomendações personalizadas."}
           </p>
         </div>
@@ -336,9 +336,10 @@ function App() {
 
     try {
       const payload = {
-        jamendoId: track.jamendoId,
+        deezerId: track.deezerId,
         title: track.title,
         artist: track.artist,
+        artistId: track.artistId || null,
         audioUrl: track.audioUrl,
         imageUrl: track.imageUrl,
         source,
@@ -496,7 +497,20 @@ function App() {
   if (inOnboarding && onboardingTracks.length === 0) {
     return (
       <main className="library-page centered">
-        <p className="status">Carregando músicas do onboarding...</p>
+        {appError ? (
+          <>
+            <p className="status error">{appError}</p>
+            <button
+              type="button"
+              className="submit-btn"
+              onClick={() => loadOnboardingTracks(token).catch((error) => setAppError(error.message || "Erro ao carregar onboarding"))}
+            >
+              Tentar novamente
+            </button>
+          </>
+        ) : (
+          <p className="status">Carregando músicas do onboarding...</p>
+        )}
       </main>
     );
   }
@@ -507,7 +521,7 @@ function App() {
         <div>
           <p className="auth-kicker">DevMusic</p>
           <h1>Bem-vindo, {profile?.name}</h1>
-          <p className="status">Sua descoberta musical conectada ao Jamendo.</p>
+          <p className="status">Sua descoberta musical conectada ao Deezer.</p>
         </div>
         <button type="button" className="logout-btn" onClick={handleLogout}>
           Sair
@@ -524,7 +538,7 @@ function App() {
         ) : (
           <div className="banner-grid">
             {recommendations.map((track) => (
-              <article key={track.jamendoId} className="banner-card">
+              <article key={track.deezerId} className="banner-card">
                 {track.imageUrl ? <img src={track.imageUrl} alt={track.title} /> : <div className="image-placeholder" />}
                 <div className="banner-content">
                   <strong>{track.title}</strong>
@@ -572,7 +586,7 @@ function App() {
         ) : null}
         <div className="search-grid">
           {searchResults.map((track) => (
-            <article key={track.jamendoId} className="music-item">
+            <article key={track.deezerId} className="music-item">
               <div>
                 <strong>{track.title}</strong>
                 <span>{track.artist}</span>
@@ -610,7 +624,7 @@ function App() {
           ) : (
             <ul className="simple-list">
               {likedMusics.map((track) => (
-                <li key={`${track.jamendoId}-${track.id}`}>
+                <li key={`${track.deezerId}-${track.id}`}>
                   <strong>{track.title}</strong>
                   <span>{track.artist}</span>
                 </li>

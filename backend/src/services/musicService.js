@@ -1,10 +1,10 @@
 import prisma from "../config/prisma.js";
 import { AppError } from "../utils/appError.js";
 import {
-  getRandomJamendoTracks,
-  getRecommendedJamendoTracks,
-  searchTracksFromJamendo
-} from "./jamendoService.js";
+  getRandomDeezerTracks,
+  getRecommendedDeezerTracks,
+  searchTracksFromDeezer
+} from "./deezerService.js";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
@@ -209,8 +209,8 @@ export const updateMusicService = async (id, userId, payload) => {
   });
 };
 
-export const searchJamendoTracksService = async (query, limit) => {
-  return searchTracksFromJamendo({ query, limit });
+export const searchDeezerTracksService = async (query, limit) => {
+  return searchTracksFromDeezer({ query, limit });
 };
 
 export const getOnboardingTracksService = async (userId, count = ONBOARDING_TARGET) => {
@@ -227,23 +227,24 @@ export const getOnboardingTracksService = async (userId, count = ONBOARDING_TARG
     return { completed: true, tracks: [] };
   }
 
-  const tracks = await getRandomJamendoTracks(count);
+  const tracks = await getRandomDeezerTracks(count);
   return { completed: false, tracks };
 };
 
 export const upsertPreferenceService = async (userId, payload) => {
   const preference = await prisma.userMusicPreference.upsert({
     where: {
-      userId_jamendoId: {
+      userId_deezerId: {
         userId,
-        jamendoId: payload.jamendoId
+        deezerId: payload.deezerId
       }
     },
     create: {
       userId,
-      jamendoId: payload.jamendoId,
+      deezerId: payload.deezerId,
       title: payload.title,
       artist: payload.artist,
+      artistId: payload.artistId,
       audioUrl: payload.audioUrl,
       imageUrl: payload.imageUrl,
       status: payload.status,
@@ -252,6 +253,7 @@ export const upsertPreferenceService = async (userId, payload) => {
     update: {
       title: payload.title,
       artist: payload.artist,
+      artistId: payload.artistId,
       audioUrl: payload.audioUrl,
       imageUrl: payload.imageUrl,
       status: payload.status,
@@ -309,14 +311,15 @@ export const getRecommendationsService = async (userId, limit = 3) => {
     },
     take: 30,
     select: {
-      jamendoId: true,
-      artist: true
+      deezerId: true,
+      artist: true,
+      artistId: true
     }
   });
 
   if (likedTracks.length === 0) {
-    return getRandomJamendoTracks(limit);
+    return getRandomDeezerTracks(limit);
   }
 
-  return getRecommendedJamendoTracks({ likedTracks, limit });
+  return getRecommendedDeezerTracks({ likedTracks, limit });
 };
