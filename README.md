@@ -17,7 +17,6 @@ Tudo isso usando uma arquitetura moderna baseada em **React + Firebase**.
 
 ![DevMusic Demo](./demo.gif)
 
-*(adicione aqui um gif mostrando o player funcionando)*
 
 ---
 
