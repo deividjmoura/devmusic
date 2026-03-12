@@ -1,10 +1,9 @@
-import { createContext, useContext, useState } from "react"
-import { musicLibrary } from "@/data/musicLibrary"
+import { createContext, useContext, useState } from 'react'
+import { musicLibrary } from '@/data/musicLibrary'
 
 const MusicContext = createContext()
 
 export function MusicProvider({ children }) {
-
   const [playlist] = useState(musicLibrary)
   const [currentTrackIndex, setCurrentTrackIndex] = useState(null)
 
@@ -26,8 +25,7 @@ export function MusicProvider({ children }) {
   const previousTrack = () => {
     if (currentTrackIndex === null) return
 
-    const prev =
-      (currentTrackIndex - 1 + playlist.length) % playlist.length
+    const prev = (currentTrackIndex - 1 + playlist.length) % playlist.length
     setCurrentTrackIndex(prev)
   }
 
@@ -38,7 +36,7 @@ export function MusicProvider({ children }) {
         currentTrack,
         playTrack,
         nextTrack,
-        previousTrack
+        previousTrack,
       }}
     >
       {children}
