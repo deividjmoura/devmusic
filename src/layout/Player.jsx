@@ -1,33 +1,31 @@
-import { useRef, useState, useEffect } from 'react'
-import { useMusic } from '@/context/MusicContext'
+import { useRef, useState, useEffect } from "react"
+import { useMusic } from "@/context/MusicContext"
 
 export default function Player() {
+
+  const { currentTrack, nextTrack, previousTrack } = useMusic()
+
   const audioRef = useRef(null)
 
   const [playing, setPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
-  const { currentTrack } = useMusic()
 
   useEffect(() => {
+
     if (!currentTrack) return
 
     const audio = audioRef.current
 
     audio.src = currentTrack.url
+    audio.play().then(() => setPlaying(true))
 
-    audio
-      .play()
-      .then(() => {
-        setPlaying(true)
-      })
-      .catch(() => {
-        setPlaying(false)
-      })
   }, [currentTrack])
 
   const togglePlay = () => {
+
     const audio = audioRef.current
+
     if (!audio) return
 
     if (playing) {
@@ -56,44 +54,83 @@ export default function Player() {
   }
 
   const formatTime = (time) => {
+
+    if (!time) return "0:00"
+
     const minutes = Math.floor(time / 60)
     const seconds = Math.floor(time % 60)
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
+
+    return `${minutes}:${seconds.toString().padStart(2,"0")}`
   }
 
+  if (!currentTrack) return null
+
   return (
-    <div style={{ borderTop: '1px solid #ccc', padding: '10px' }}>
+
+    <div className="fixed bottom-0 left-0 w-full bg-gray-900 text-white p-4">
+
       <audio
         ref={audioRef}
-        src={currentTrack?.url}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoaded}
+        onEnded={nextTrack}
       />
 
-      <div style={{ marginBottom: '10px' }}>
-        {currentTrack && (
-          <div style={{ marginBottom: '10px' }}>
-            <strong>{currentTrack.title}</strong> - {currentTrack.artist}
+      <div className="flex items-center justify-between">
+
+        <div>
+          <div className="font-bold">
+            {currentTrack.title}
           </div>
-        )}
+
+          <div className="text-sm text-gray-400">
+            {currentTrack.artist}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+
+          <button onClick={previousTrack}>
+            ⏮
+          </button>
+
+          <button
+            onClick={togglePlay}
+            className="bg-green-500 px-4 py-2 rounded"
+          >
+            {playing ? "Pause" : "Play"}
+          </button>
+
+          <button onClick={nextTrack}>
+            ⏭
+          </button>
+
+        </div>
+
+        <div className="flex items-center gap-2 w-1/3">
+
+          <span className="text-sm">
+            {formatTime(currentTime)}
+          </span>
+
+          <input
+            type="range"
+            min="0"
+            max={duration}
+            value={currentTime}
+            onChange={handleSeek}
+            className="w-full"
+          />
+
+          <span className="text-sm">
+            {formatTime(duration)}
+          </span>
+
+        </div>
+
       </div>
 
-      <button onClick={togglePlay}>{playing ? 'Pause' : 'Play'}</button>
-
-      <div style={{ marginTop: '10px' }}>
-        <span>{formatTime(currentTime)}</span>
-
-        <input
-          type="range"
-          min="0"
-          max={duration}
-          value={currentTime}
-          onChange={handleSeek}
-          style={{ width: '300px', margin: '0 10px' }}
-        />
-
-        <span>{formatTime(duration)}</span>
-      </div>
     </div>
+
   )
 }
