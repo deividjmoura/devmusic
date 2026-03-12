@@ -1,16 +1,136 @@
-# React + Vite
+# 🎵 DevMusic
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Um aplicativo de streaming de música inspirado em plataformas modernas de música.
 
-Currently, two official plugins are available:
+O objetivo do projeto é criar uma experiência semelhante a um player moderno, permitindo que usuários:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+* façam **upload de músicas**
+* **ouçam músicas enviadas por outros usuários**
+* **curtam músicas**
+* construam sua própria **biblioteca musical**
 
-## React Compiler
+Tudo isso usando uma arquitetura moderna baseada em **React + Firebase**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+# 🚀 Preview
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+![DevMusic Demo](./demo.gif)
+
+*(adicione aqui um gif mostrando o player funcionando)*
+
+---
+
+# ✨ Funcionalidades atuais
+
+* 🎧 Player global de música
+* ⏯ Play / Pause
+* ⏱ Barra de progresso
+* 🎼 Biblioteca de músicas
+* 🔁 Troca de música ao clicar
+* ⚡ Atualização em tempo real do player
+
+---
+
+# 🧠 Tecnologias usadas
+
+* React
+* Vite
+* Firebase *(em breve)*
+* ESLint
+* Husky
+* Commitizen
+
+---
+
+# 📁 Estrutura do projeto
+
+```
+src
+ ├ app
+ │   └ App.jsx
+ │
+ ├ context
+ │   └ MusicContext.jsx
+ │
+ ├ layout
+ │   ├ Layout.jsx
+ │   └ Player.jsx
+ │
+ ├ pages
+ │   ├ Home.jsx
+ │   ├ Search.jsx
+ │   └ Library.jsx
+ │
+ └ data
+     └ musicLibrary.js
+```
+
+---
+
+# 🎯 Objetivo do projeto
+
+Esse projeto está sendo desenvolvido como **estudo de arquitetura de aplicações modernas**, incluindo:
+
+* gerenciamento de estado global
+* reprodução de áudio
+* upload de arquivos
+* backend serverless
+* integração com storage em nuvem
+
+---
+
+# 🛠 Roadmap
+
+Próximas funcionalidades planejadas:
+
+* [ ] Upload de músicas
+* [ ] Integração com Firebase Storage
+* [ ] Sistema de curtidas
+* [ ] Perfil de usuário
+* [ ] Playlist
+* [ ] Player com next / previous
+* [ ] Volume control
+* [ ] Capa do álbum
+
+---
+
+# 📦 Instalação
+
+Clone o projeto
+
+```bash
+git clone https://github.com/deividjmoura/devmusic.git
+```
+
+Entre na pasta
+
+```bash
+cd devmusic
+```
+
+Instale as dependências
+
+```bash
+npm install
+```
+
+Rode o projeto
+
+```bash
+npm run dev
+```
+
+---
+
+# 👨‍💻 Autor
+
+Desenvolvido por **Deivid Moura**
+
+Projeto criado para estudo de desenvolvimento moderno com React.
+
+---
+
+# ⭐ Contribuição
+
+Sinta-se livre para abrir **issues**, sugerir melhorias ou contribuir com o projeto.
