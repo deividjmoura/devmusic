@@ -29,7 +29,7 @@ Tudo isso usando uma arquitetura moderna baseada em **React + Firebase**.
 - ⏯ Play / Pause
 - ⏱ Barra de progresso
 - 🎼 Biblioteca de músicas
-- 🔁 Troca de música ao clicar
+- 🔁 Trocar de música ao clicar
 - ⚡ Atualização em tempo real do player
 
 ---
